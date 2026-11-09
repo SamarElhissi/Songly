@@ -1,19 +1,21 @@
-# SongCraft
+# Songly
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Node 24](https://img.shields.io/badge/node-24-green.svg)](https://nodejs.org/)
 
+AI music generator by Samar Elhissi
+
 Local web app that turns a text prompt into a short song with vocals and keeps the result after you close the tab.
 
 ## Why I built this
 
-I enjoy playing my acoustic guitar, singing and working with AI, and SongCraft combines both music and AI. It started as a Streamlit prototype that stitched together MusicGen, GPT-2 and text-to-speech, but the vocals never sounded like singing. I rebuilt it as a full-stack app with background jobs and switched to ACE-Step, which generates the vocals and the music together.
+I enjoy playing my acoustic guitar, singing and working with AI, and Songly combines both music and AI. It started as a Streamlit prototype that stitched together MusicGen, GPT-2 and text-to-speech, but the vocals never sounded like singing. I rebuilt it as a full-stack app with background jobs and switched to ACE-Step, which generates the vocals and the music together.
 The vocal part was the most challenging in the project, and I'm happy that I used ACE-Step in the end.
 
 ## Demo
 
-![SongCraft UI](assets/demo.png)
+![Songly UI](assets/demo.png)
 
 | Prompt | Audio |
 | --- | --- |
@@ -92,7 +94,7 @@ Equivalent Make targets (if `make` is on PATH): `make backend`, `make frontend`,
 
 ## Run it with real models (ACE-Step)
 
-Prerequisites: Python 3.11 or 3.12 for ACE-Step (`ace-step/pyproject.toml` requires `>=3.11,<3.13`), Node/npm for the frontend, a CUDA GPU recommended (ACE-Step also documents CPU/MPS; SongCraft’s worker currently passes `cuda` when `SONGCRAFT_DEVICE=auto`).
+Prerequisites: Python 3.11 or 3.12 for ACE-Step (`ace-step/pyproject.toml` requires `>=3.11,<3.13`), Node/npm for the frontend, a CUDA GPU recommended (ACE-Step also documents CPU/MPS; Songly’s worker currently passes `cuda` when `SONGCRAFT_DEVICE=auto`).
 
 ```powershell
 make setup
@@ -133,7 +135,7 @@ macOS and Linux ACE-Step installs via this repo’s setup script are untested he
 
 ## Credits and licenses
 
-SongCraft is MIT ([LICENSE](LICENSE)).
+Songly is MIT ([LICENSE](LICENSE)).
 
 [ACE-Step 1.5](https://github.com/ACE-Step/ACE-Step-1.5) code is MIT (`ace-step/LICENSE`). The Hugging Face model card for the weights used here also lists **MIT** (`ace-step/checkpoints/README.md` after download).
 

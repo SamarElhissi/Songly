@@ -8,7 +8,8 @@ export function App() {
   return (
     <main>
       <header className="page-header">
-        <h1>SongCraft</h1>
+        <h1>Songly</h1>
+        <p className="tagline">AI music generator by Samar Elhissi</p>
         <p>Submit a prompt. Generation keeps running if you close this page.</p>
       </header>
       <PromptForm />

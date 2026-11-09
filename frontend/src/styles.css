@@ -43,6 +43,12 @@ p {
   margin-bottom: 1.25rem;
 }
 
+.page-header .tagline {
+  margin: 0 0 0.5rem;
+  color: #1c1915;
+  font-size: 1rem;
+}
+
 .page-header p,
 .hint,
 .meta,

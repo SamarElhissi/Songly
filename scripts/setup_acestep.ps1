@@ -1,6 +1,6 @@
-# Install ACE-Step 1.5 for SongCraft on Windows.
+# Install ACE-Step 1.5 for Songly on Windows.
 # Follows ace-step/docs/en/INSTALL.md (uv sync) and pins a known commit.
-# SongCraft then runs generation through .venv-acestep (see SONGCRAFT_ACESTEP_PYTHON).
+# Songly then runs generation through .venv-acestep (see SONGCRAFT_ACESTEP_PYTHON).
 
 $ErrorActionPreference = "Stop"
 
@@ -95,7 +95,7 @@ Current 'python' on PATH is not used if it is outside 3.11-3.12.
     }
 
     Write-Host "Running uv sync into .venv-acestep (CUDA wheels come from ace-step/pyproject.toml) ..."
-    # UV_PROJECT_ENVIRONMENT makes uv use SongCraft's .venv-acestep instead of ace-step/.venv.
+    # UV_PROJECT_ENVIRONMENT makes uv use Songly's .venv-acestep instead of ace-step/.venv.
     # Not fully re-verified in this session on a clean machine; if sync fails, see ace-step/docs/en/INSTALL.md.
     $env:UV_PROJECT_ENVIRONMENT = $VenvDir
     Push-Location $AceStepDir
@@ -111,7 +111,7 @@ Current 'python' on PATH is not used if it is outside 3.11-3.12.
 
 Setup finished.
 - ACE-Step checkout: $AceStepDir
-- Python for SongCraft: $VenvPython
+- Python for Songly: $VenvPython
 First real song will download weights into ace-step/checkpoints (gitignored).
 "@
 } finally {
