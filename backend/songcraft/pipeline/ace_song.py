@@ -17,7 +17,7 @@ class AceStepGenerator:
     """Generate a finished song, vocals included, with ACE-Step 1.5.
 
     The model needs its own PyTorch build, so generation runs in .venv-acestep
-    instead of the MusicGen environment.
+    instead of the API virtualenv.
     """
 
     def __init__(self, settings: Settings) -> None:

@@ -15,7 +15,7 @@ class Settings(BaseSettings):
 
     database_url: str = "sqlite:///./data/songcraft.db"
     data_dir: Path = Path("./data")
-    # auto, cuda, mps, or cpu. Passed through to MusicGen and the lyrics model.
+    # auto, cuda, mps, or cpu. Passed through to the older lyrics path when used.
     device: str = "auto"
     min_duration_seconds: float = 5
     max_duration_seconds: float = 30
@@ -29,9 +29,8 @@ class Settings(BaseSettings):
     vocal_synthesizer: str = "melody"
     mixer: str = "pydub"
     # Beat tracking is not one of the four model slots; the runner needs times
-    # before it can place lyric lines.
+    # before it can place lyric lines on the older path.
     beat_analyzer: str = "librosa"
-    music_model: str = "facebook/musicgen-small"
     lyrics_model: str = "Qwen/Qwen2.5-1.5B-Instruct"
     job_queue: str = "inprocess"
 

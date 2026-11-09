@@ -12,7 +12,6 @@ from songcraft.pipeline.fakes import (
 )
 from songcraft.pipeline.lyrics import Gpt2LyricsGenerator, InstructLyricsGenerator
 from songcraft.pipeline.mixer import PydubMixer
-from songcraft.pipeline.music import MusicGenGenerator
 from songcraft.pipeline.vocals import GttsVocalSynthesizer, MelodicVocalSynthesizer
 from songcraft.pipeline.interfaces import (
     BeatAnalyzer,
@@ -25,14 +24,13 @@ from songcraft.pipeline.interfaces import (
 
 
 def build_pipeline(settings: Settings) -> Pipeline:
-    # One instance per process, so phase 2 wrappers can keep loaded weights here.
+    # One instance per process, so wrappers can keep loaded weights here.
     return Pipeline(
         music=_select(
             settings.music_generator,
             {
                 "fake": FakeMusicGenerator,
                 "acestep": lambda: AceStepGenerator(settings),
-                "musicgen": lambda: MusicGenGenerator(settings.music_model, settings.device),
             },
             "music generator",
         ),

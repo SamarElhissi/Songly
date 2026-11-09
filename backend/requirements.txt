@@ -4,8 +4,8 @@ sqlmodel==0.0.48
 pydantic-settings==2.16.2
 httpx==0.27.2
 pytest==8.4.2
-# Speech, beat tracking, and mixing. torch and audiocraft stay in the existing
-# environment: audiocraft is imported from the repo, not installed by this file.
+# Speech, beat tracking, and mixing for the older non-ACE path.
+# torch is only required when that path loads instruct/gpt2 lyrics.
 gTTS==2.5.4
 librosa==0.10.1
 pydub==0.25.1

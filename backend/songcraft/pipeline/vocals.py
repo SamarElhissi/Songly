@@ -8,9 +8,8 @@ _SAMPLE_RATE = 22050
 class MelodicVocalSynthesizer:
     """Speak each word, then tune it to the note for that word.
 
-    checkpoints/diffsinger has a config and a Chinese dictionary, and no acoustic
-    weights, so DiffSinger cannot sing these lines. The note list is still what
-    a singer needs, and this step follows it.
+    DiffSinger lives under legacy/ and is not used here. The note list is still
+    what a singer needs, and this step follows it.
     """
 
     def synthesize(self, line: str, notes: list[Note], output_path: Path) -> None:

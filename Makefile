@@ -1,4 +1,4 @@
-.PHONY: backend frontend test
+.PHONY: backend frontend test setup
 
 PYTHON ?= python
 
@@ -11,3 +11,6 @@ frontend:
 test:
 	$(PYTHON) -m pytest
 	cd frontend && npm test
+
+setup:
+	powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup_acestep.ps1

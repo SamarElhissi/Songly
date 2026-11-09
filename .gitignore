@@ -44,6 +44,12 @@ wheels/
 # generated songs and the local database
 /data/
 
+# large model weights (including archived DiffSinger vocoder)
+*.ckpt
+
+# archived nested DiffSinger checkout (own .git; not part of SongCraft)
+/legacy/diffsinger/
+
 # frontend build output
 node_modules/
 frontend/dist/

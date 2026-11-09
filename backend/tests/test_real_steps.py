@@ -6,11 +6,10 @@ from songcraft.device import resolve_device
 from songcraft.pipeline.analyze import LibrosaBeatAnalyzer
 from songcraft.pipeline.beats import LinePlacement
 from songcraft.pipeline.factory import build_pipeline
-from songcraft.pipeline.fakes import write_silent_wav
+from songcraft.pipeline.fakes import FakeMusicGenerator, write_silent_wav
 from songcraft.pipeline.lyrics import Gpt2LyricsGenerator, InstructLyricsGenerator
 from songcraft.pipeline.melody import Note
 from songcraft.pipeline.mixer import PydubMixer
-from songcraft.pipeline.music import MusicGenGenerator
 from songcraft.pipeline.vocals import GttsVocalSynthesizer, MelodicVocalSynthesizer
 
 
@@ -43,25 +42,23 @@ def test_real_pipeline_builds_without_loading_weights(settings_factory, monkeypa
     def boom(*_args, **_kwargs):
         raise AssertionError("weights loaded at startup")
 
-    monkeypatch.setattr("songcraft.pipeline.music._load_musicgen", boom)
     monkeypatch.setattr("songcraft.pipeline.lyrics._load_text_pipeline", boom)
     monkeypatch.setattr("songcraft.pipeline.lyrics._load_instruct", boom)
     settings = settings_factory(
-        music_generator="musicgen",
+        music_generator="fake",
         lyrics_generator="gpt2",
         vocal_synthesizer="gtts",
         mixer="pydub",
         beat_analyzer="librosa",
     )
     pipeline = build_pipeline(settings)
-    assert isinstance(pipeline.music, MusicGenGenerator)
-    assert pipeline.music._model is None
+    assert isinstance(pipeline.music, FakeMusicGenerator)
     assert isinstance(pipeline.lyrics, Gpt2LyricsGenerator)
     assert pipeline.lyrics._pipeline is None
 
     instructed = build_pipeline(
         settings_factory(
-            music_generator="musicgen",
+            music_generator="fake",
             lyrics_generator="instruct",
             vocal_synthesizer="melody",
             lyrics_model="Qwen/Qwen2.5-1.5B-Instruct",
@@ -70,39 +67,6 @@ def test_real_pipeline_builds_without_loading_weights(settings_factory, monkeypa
     assert isinstance(instructed.lyrics, InstructLyricsGenerator)
     assert instructed.lyrics._model is None
     assert isinstance(instructed.vocals, MelodicVocalSynthesizer)
-
-
-def test_musicgen_loads_once_and_writes_wav(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    torch = pytest.importorskip("torch")
-    pytest.importorskip("torchaudio")
-    loads = {"count": 0}
-
-    class FakeModel:
-        sample_rate = 8000
-
-        def set_generation_params(self, **kwargs) -> None:
-            self.params = kwargs
-
-        def generate(self, descriptions, progress=False, return_tokens=False):
-            assert descriptions == ["rain"]
-            assert self.params["duration"] == 5
-            assert progress is False
-            assert return_tokens is False
-            return torch.zeros(1, 1, 800)
-
-    def load(name: str, device: str) -> FakeModel:
-        loads["count"] += 1
-        assert name == "facebook/musicgen-small"
-        assert device == "cpu"
-        return FakeModel()
-
-    monkeypatch.setattr("songcraft.pipeline.music._load_musicgen", load)
-    generator = MusicGenGenerator("facebook/musicgen-small", "cpu")
-    destination = tmp_path / "songs" / "instrumental.wav"
-    generator.generate("rain", 5, destination)
-    generator.generate("rain", 5, destination)
-    assert loads["count"] == 1
-    assert destination.stat().st_size > 44
 
 
 def test_gpt2_reuses_one_pipeline(monkeypatch: pytest.MonkeyPatch) -> None:
