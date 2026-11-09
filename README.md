@@ -115,7 +115,7 @@ macOS and Linux ACE-Step installs via this repo’s setup script are untested he
 
 | | |
 | --- | --- |
-| Generation time per song | ~120–180 s for 30 s songs (3 runs) |
+| Generation time per song | ~120–180 s for 30 s song |
 | Hardware | Windows 11, RTX 4060 |
 
 ## Limitations
