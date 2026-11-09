@@ -1,3 +1,4 @@
+import shutil
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -7,6 +8,19 @@ from pydantic_settings import SettingsConfigDict
 
 from songcraft.config import Settings
 from songcraft.main import create_app
+
+
+@pytest.fixture
+def require_ffmpeg() -> None:
+    """pydub mix/export needs ffmpeg on PATH (or the optional repo ffmpeg/ folder)."""
+    if shutil.which("ffmpeg") and shutil.which("ffprobe"):
+        return
+    bundled = Path(__file__).resolve().parents[2] / "ffmpeg"
+    has_ffmpeg = (bundled / "ffmpeg.exe").is_file() or (bundled / "ffmpeg").is_file()
+    has_ffprobe = (bundled / "ffprobe.exe").is_file() or (bundled / "ffprobe").is_file()
+    if has_ffmpeg and has_ffprobe:
+        return
+    pytest.skip("ffmpeg/ffprobe not available")
 
 
 class IsolatedSettings(Settings):

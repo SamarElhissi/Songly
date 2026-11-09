@@ -161,7 +161,7 @@ def test_librosa_silence_has_no_tempo(tmp_path: Path) -> None:
     assert beats == []
 
 
-def test_pydub_mixer_writes_mp3(tmp_path: Path) -> None:
+def test_pydub_mixer_writes_mp3(tmp_path: Path, require_ffmpeg: None) -> None:
     pytest.importorskip("pydub")
     from pydub.generators import Sine
 

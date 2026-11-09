@@ -58,7 +58,9 @@ def test_c_major_chord_estimates_c(tmp_path: Path) -> None:
     assert key.scale == MAJOR_SCALE
 
 
-def test_melody_vocal_matches_the_note_length(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_melody_vocal_matches_the_note_length(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, require_ffmpeg: None
+) -> None:
     numpy = pytest.importorskip("numpy")
     pytest.importorskip("librosa")
     pytest.importorskip("pydub")
