@@ -1,7 +1,7 @@
 # Songly
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python 3.11-3.12](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.11-3.12](https://img.shields.io/badge/python-3.11--3.12-blue.svg)](https://www.python.org/downloads/)
 [![Node 24](https://img.shields.io/badge/node-24-green.svg)](https://nodejs.org/)
 
 AI music generator by Samar Elhissi
@@ -57,6 +57,7 @@ Older instrumental/lyrics/vocals/mixer details: [docs/ARCHITECTURE.md](docs/ARCH
 - ACE-Step runs in a fresh process per song (weights reload each time). The ACE path records only `generating_music` in `step_timings`.
 
 ## Try it in two minutes (no GPU, no model downloads)
+Do this after the quickstart above. If you already created `.env`, skip the `copy` line and set the generators back to `acestep`.
 
 ```powershell
 python -m venv .venv
@@ -94,7 +95,7 @@ Equivalent Make targets (if `make` is on PATH): `make backend`, `make frontend`,
 
 ## Run it with real models (ACE-Step)
 
-Prerequisites: Python 3.11 or 3.12 for ACE-Step (`ace-step/pyproject.toml` requires `>=3.11,<3.13`), Node/npm for the frontend, a NVIDIA GPU required (ACE-Step also documents CPU/MPS; Songly’s worker currently passes `cuda` when `SONGCRAFT_DEVICE=auto`).
+Prerequisites: Python 3.11 or 3.12 (ACE-Step requires `>=3.11,<3.13`), Node/npm, `ffmpeg` on your PATH, and an NVIDIA GPU. ACE-Step documents CPU/MPS support, but Songly's worker currently passes `cuda` when `SONGCRAFT_DEVICE=auto`.
 
 ```powershell
 make setup
