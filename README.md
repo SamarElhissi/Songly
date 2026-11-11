@@ -45,7 +45,7 @@ flowchart LR
   FILES --> UI
 ```
 
-Vite proxies `/api` to `127.0.0.1:8000`. One background thread runs songs. On the default path the worker starts `.venv-acestep`, runs `acestep_worker.py`, plans lyrics with `acestep-5Hz-lm-0.6B`, renders with `acestep-v15-turbo`, and saves `final.mp3`. Durations under 10s are raised to 10 for ACE-Step; the API still clamps to `MIN`–`MAX` (5–30 by default).
+Vite proxies `/api` to `127.0.0.1:8000`. One background thread runs songs. On the default path the API keeps one `.venv-acestep` process warm, plans lyrics with `acestep-5Hz-lm-0.6B`, renders with `acestep-v15-turbo`, and saves `final.mp3`. The process loads models on the first song and exits after it has been idle. Durations under 10s are raised to 10 for ACE-Step; the API still clamps to `MIN`–`MAX` (5–30 by default).
 
 Older instrumental/lyrics/vocals/mixer details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
@@ -54,7 +54,7 @@ Older instrumental/lyrics/vocals/mixer details: [docs/ARCHITECTURE.md](docs/ARCH
 - Create returns before generation; the UI polls `GET /api/songs/{id}` every 2s until finished.
 - SQLite plus files under `data/songs/{id}/` survive restarts. Running statuses become failed with "Interrupted by server restart"; `queued` jobs are re-enqueued.
 - Pipeline slots are chosen by name in config; tests use `fake` and do not download weights.
-- ACE-Step runs in a fresh process per song (weights reload each time). The ACE path records only `generating_music` in `step_timings`.
+- ACE-Step stays in its own process and is reused across songs (`SONGCRAFT_ACESTEP_KEEP_WARM`). The process exits after an idle timeout so the GPU can be released. `KEEP_WARM=false` starts a fresh process per song. The ACE path records `loading_models` only for the song that loaded weights, and `generating_music` for the rest.
 
 ## Try it in two minutes (no GPU, no model downloads)
 Do this after the quickstart above. If you already created `.env`, skip the `copy` line and set the generators back to `acestep`.
@@ -123,14 +123,11 @@ macOS and Linux ACE-Step installs via this repo’s setup script are untested he
 
 - No authentication.
 - One in-process worker; a second song waits. Mid-run process kill → failed, not resumed.
-- ACE-Step reloads weights every song. UI still lists five older steps while status stays on `generating_music`.
 - No `instrumental.wav` on the ACE path. Planner lyrics may ignore parts of the prompt.
 - ACE-Step mp3 export needs `ffmpeg` on PATH for the worker’s AudioSaver.
 
 ## Roadmap
 
-- Single “Generating” step in the UI for ACE-Step.
-- Keep the ACE-Step process warm between songs.
 - Optional form field to pass lyrics through instead of the planner.
 - Non-Windows setup script if needed.
 

@@ -95,6 +95,7 @@ export function parseSong(value: unknown): Song {
     lyrics: nullableString(value.lyrics, "lyrics"),
     tempo_bpm: nullableNumber(value.tempo_bpm),
     step_timings: parseTimings(value.step_timings),
+    engine: value.engine === "acestep" ? "acestep" : "staged",
     tracks: parseTracks(value.tracks),
     created_at: requiredString(value.created_at, "created_at"),
     updated_at: requiredString(value.updated_at, "updated_at"),

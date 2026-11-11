@@ -20,6 +20,7 @@ export type Song = {
   lyrics: string | null;
   tempo_bpm: number | null;
   step_timings: Record<string, number>;
+  engine: "acestep" | "staged";
   tracks: {
     instrumental: boolean;
     final: boolean;

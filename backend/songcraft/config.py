@@ -25,6 +25,12 @@ class Settings(BaseSettings):
     # Empty means <repo>/.venv-acestep/Scripts/python.exe. ACE-Step has its own torch.
     acestep_python: str = ""
     acestep_root: Path = Path("./ace-step")
+    # Keep the ACE-Step process alive between songs. False is one process per song.
+    acestep_keep_warm: bool = True
+    # Shut the warm process down after this many idle seconds. 0 keeps it until the API stops.
+    acestep_idle_seconds: float = 600
+    # Kill a song that is still running after this many seconds, then start fresh next time.
+    acestep_song_timeout_seconds: float = 300
     lyrics_generator: str = "instruct"
     vocal_synthesizer: str = "melody"
     mixer: str = "pydub"
@@ -44,6 +50,10 @@ class Settings(BaseSettings):
             )
         if self.device not in {"auto", "cuda", "mps", "cpu"}:
             raise ValueError("device must be one of: auto, cuda, mps, cpu")
+        if self.acestep_idle_seconds < 0:
+            raise ValueError("acestep_idle_seconds must be zero or positive")
+        if self.acestep_song_timeout_seconds <= 0:
+            raise ValueError("acestep_song_timeout_seconds must be positive")
         return self
 
 

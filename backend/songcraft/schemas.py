@@ -41,6 +41,8 @@ class SongRead(BaseModel):
     lyrics: str | None
     tempo_bpm: float | None
     step_timings: dict[str, float]
+    # acestep shows one progress step. staged is the older five-step path.
+    engine: str
     tracks: TrackFlags
     created_at: datetime
     updated_at: datetime
@@ -56,6 +58,7 @@ def song_to_read(song: Song, settings: Settings) -> SongRead:
         lyrics=song.lyrics,
         tempo_bpm=song.tempo_bpm,
         step_timings=_timings(song.step_timings),
+        engine="acestep" if settings.music_generator == "acestep" else "staged",
         tracks=TrackFlags(
             instrumental=instrumental_path(settings, song.id).is_file(),
             final=final_path(settings, song.id).is_file(),

@@ -11,7 +11,7 @@ from songcraft.clock import utcnow
 from songcraft.config import Settings
 from songcraft.models import STEP_ORDER, Song, SongStatus
 from songcraft.paths import final_path, instrumental_path, song_dir, vocal_path
-from songcraft.pipeline.ace_song import AceStepGenerator
+from songcraft.pipeline.ace_song import AceStepGenerator, AceStepWorkerError
 from songcraft.pipeline.beats import LinePlacement, map_lines_to_beats
 from songcraft.pipeline.interfaces import Pipeline
 from songcraft.pipeline.melody import build_line_melody, estimate_key, syllables_per_line, target_line_count
@@ -110,13 +110,32 @@ def run_song(song_id: str, session: Session, pipeline: Pipeline, settings: Setti
 
 def _run_acestep(session: Session, song: Song, pipeline: Pipeline, final: Path) -> None:
     def generate() -> None:
-        outcome = pipeline.music.generate_song(song.prompt, song.duration_seconds, final)
+        def on_loaded(seconds: float) -> None:
+            # Commit before generation so a poll can show the load on this song.
+            song.step_timings = {**(song.step_timings or {}), "loading_models": round(seconds, 3)}
+            flag_modified(song, "step_timings")
+            session.add(song)
+            session.commit()
+
+        outcome = pipeline.music.generate_song(
+            song.prompt,
+            song.duration_seconds,
+            final,
+            job_id=song.id,
+            on_loaded=on_loaded,
+        )
         song.lyrics = str(outcome.get("lyrics") or "")
         bpm = outcome.get("bpm")
         song.tempo_bpm = float(bpm) if isinstance(bpm, (int, float)) else None
         duration = outcome.get("duration")
         if isinstance(duration, (int, float)):
             song.duration_seconds = float(duration)
+        generating = outcome.get("generating_music")
+        if isinstance(generating, (int, float)):
+            song.step_timings = {**(song.step_timings or {}), "generating_music": round(float(generating), 3)}
+        loading = outcome.get("loading_models")
+        if isinstance(loading, (int, float)) and "loading_models" not in (song.step_timings or {}):
+            song.step_timings = {**(song.step_timings or {}), "loading_models": round(float(loading), 3)}
 
     _run_step(session, song, SongStatus.generating_music, generate)
     _set_status(session, song, SongStatus.completed)
@@ -136,6 +155,15 @@ def _run_step(
         result = fn()
     except SongRemoved:
         raise
+    except AceStepWorkerError as exc:
+        elapsed = time.perf_counter() - started
+        logger.info(
+            "step_finished job_id=%s step=%s duration_s=%.3f status=failed",
+            song.id,
+            step.value,
+            elapsed,
+        )
+        raise PipelineError(exc.message) from None
     except Exception:
         elapsed = time.perf_counter() - started
         logger.info(
@@ -147,7 +175,10 @@ def _run_step(
         logger.exception("step_error job_id=%s step=%s", song.id, step.value)
         raise PipelineError(_FAILURE_MESSAGES[step]) from None
     elapsed = time.perf_counter() - started
-    song.step_timings = {**(song.step_timings or {}), step.value: round(elapsed, 3)}
+    timings = {**(song.step_timings or {})}
+    if step.value not in timings:
+        timings[step.value] = round(elapsed, 3)
+    song.step_timings = timings
     flag_modified(song, "step_timings")
     song.updated_at = utcnow()
     session.add(song)

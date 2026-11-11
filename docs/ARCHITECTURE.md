@@ -16,7 +16,7 @@ flowchart LR
 
 `POST /api/songs` stores a `queued` row and returns 202. `InProcessJobQueue` runs one song at a time. When `pipeline.music` is an `AceStepGenerator`, `run_song` calls `generate_song` only: status stays on `generating_music`, then `completed`. Lyrics, BPM, and the duration sent to ACE-Step are written on the song row. No instrumental file is produced.
 
-The subprocess is `SONGCRAFT_ACESTEP_PYTHON` running `backend/songcraft/pipeline/acestep_worker.py`. That process loads `acestep-v15-turbo` and `acestep-5Hz-lm-0.6B` from `ace-step/checkpoints`, plans English lyrics via `create_sample`, and writes an mp3.
+The subprocess is `SONGCRAFT_ACESTEP_PYTHON` running `backend/songcraft/pipeline/acestep_worker.py`. With `SONGCRAFT_ACESTEP_KEEP_WARM` (the default) that process stays up, loads `acestep-v15-turbo` and `acestep-5Hz-lm-0.6B` once, and accepts later songs as JSON lines on stdin. It exits after `SONGCRAFT_ACESTEP_IDLE_SECONDS` or when the API stops. `KEEP_WARM=false` is the one-shot process. The worker plans English lyrics via `create_sample` and writes an mp3.
 
 ## Older path (non-ACE music generator)
 

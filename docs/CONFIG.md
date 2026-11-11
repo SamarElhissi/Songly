@@ -15,6 +15,9 @@ Copy `.env.example` to `.env` at the repository root. Settings use the `SONGCRAF
 | `SONGCRAFT_MUSIC_GENERATOR` | `acestep` | `acestep` or `fake` |
 | `SONGCRAFT_ACESTEP_PYTHON` | _(empty)_ | Python executable for the ACE-Step worker. Empty means `<repo>/.venv-acestep/Scripts/python.exe` |
 | `SONGCRAFT_ACESTEP_ROOT` | `./ace-step` | ACE-Step checkout (checkpoints live under `<root>/checkpoints`) |
+| `SONGCRAFT_ACESTEP_KEEP_WARM` | `true` | Reuse one ACE-Step process across songs. `false` starts a fresh process per song |
+| `SONGCRAFT_ACESTEP_IDLE_SECONDS` | `600` | Exit the warm process after this many idle seconds. `0` keeps it until the API stops |
+| `SONGCRAFT_ACESTEP_SONG_TIMEOUT_SECONDS` | `300` | Stop a song that is still running after this many seconds. The next song starts a new process |
 | `SONGCRAFT_JOB_QUEUE` | `inprocess` | `inprocess` (background thread) or `inline` (tests) |
 
 Set `SONGCRAFT_MUSIC_GENERATOR=fake` (and the older-pipeline slots to `fake` if you want zero model use) to run without ACE-Step or Hugging Face downloads.
