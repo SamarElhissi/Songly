@@ -79,3 +79,5 @@ dataset/*
 /notes
 output/
 myenv/
+
+ffmpeg/
