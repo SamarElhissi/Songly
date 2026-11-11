@@ -48,6 +48,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         try:
             yield
         finally:
+            # Stop ACE-Step before joining the queue so an in-flight song unblocks.
+            music = getattr(app.state.pipeline, "music", None)
+            stop = getattr(music, "shutdown", None)
+            if callable(stop):
+                stop()
             app.state.queue.shutdown()
 
     app = FastAPI(title="SongCraft", lifespan=lifespan)
